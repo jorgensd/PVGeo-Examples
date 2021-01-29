@@ -6,7 +6,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     xvfb
 
 # Install optional dependencies of pyvista 
-RUN pip3 install --upgrade pyvista ipytvtk_simple
+RUN pip3 install --upgrade pyvista ipyvtk_simple
 
 # Allow jupyterlab for ipyvtk
 ENV DISPLAY=:99.0
