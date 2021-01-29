@@ -16,4 +16,4 @@ ENV PYVISTA_USE_IPYVTK=true
 COPY expath/docker/nbstart /srv/bin/nbstart
 RUN  chmod +x /srv/bin/nbstart
 
-ENTRYPOINT ["/srv/bin/nbstart"]
+ENTRYPOINT ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root","/srv/bin/nbstart"]
