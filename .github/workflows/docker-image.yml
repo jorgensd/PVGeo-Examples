@@ -1,0 +1,40 @@
+# name: Docker tutorial images
+
+# # Builds images with dolfinx and all of the required FEniCS Project
+# # components nightly.
+
+
+  # Uncomment the below to trigger 'docker build' on push
+  push:
+     branches:
+       - "master"
+  # schedule:
+  #   # '*' is a special character in YAML, so string must be quoted
+  #   - cron: "0 6 * * *"
+  workflow_dispatch: ~
+
+
+  build_end_user_images:
+    name: Build dolfinx tutorial images for binder
+    if: ${{ github.repository == 'jorgensd/PVGeo-Examples' && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-20.04
+    env:
+      HDF5_MPI: "ON"
+      CC: "mpicc"
+      HDF5_DIR: "/usr/lib/x86_64-linux-gnu/hdf5/mpich/"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: "jorgensd/PVGeo-Examples"
+          path: "expath"
+      - name: Pull dolfinx/lab
+        run: |
+          docker pull dolfinx/lab
+      - name: Build the Docker images
+        run: |
+          docker build --file expath/docker/Dockerfile --cache-from dolfinx/lab --tag dokken92/dolfinx_custom:test_lab_env .
+      - name: Log into the DockerHub registry
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Push to the DockerHub registry
+        run: |
+          docker push dokken92/dolfinx_custom:test_lab_env
