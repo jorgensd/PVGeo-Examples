@@ -1,10 +1,12 @@
-FROM dolfinx/dolfinx
+FROM dolfinx/lab
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3-pip libgl1-mesa-dev xvfb && \
+    apt-get -y install libgl1-mesa-dev \
+    xvfb && \
 	apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache --upgrade pip && \
-    pip3 install --no-cache notebook pyvista
+
+# Install optional dependencies of pyvista 
+RUN pip3 install --no-cache pyvista ipyvtk_simple
 
 # create user with a home directory
 ARG NB_USER=fenics
@@ -16,14 +18,17 @@ RUN adduser --disabled-password \
     --gecos "Default user" \
     --uid ${NB_UID} \
     ${NB_USER}
-
-
 WORKDIR ${HOME}
 COPY . ${HOME}
+# Add headless display
 RUN chown -R ${NB_UID} ${HOME}
 COPY start /srv/bin/start
 RUN  chmod +x /srv/bin/start
 
 USER ${USER}
-ENTRYPOINT ["/srv/bin/start"]
-CMD ["python3 test.py"]
+
+EXPOSE 8888/tcp
+ENV SHELL /bin/bash
+
+
+ENTRYPOINT ["/srv/bin/start", "jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root"]

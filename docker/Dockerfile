@@ -3,17 +3,17 @@ FROM dolfinx/lab
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -qq update && \
     apt-get -y install libgl1-mesa-dev \ 
-    xvfb
+    xvfb && \
+         apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install optional dependencies of pyvista 
-RUN pip3 install --upgrade pyvista ipyvtk_simple
+RUN pip3 install --no-cache pyvista ipyvtk_simple
 
-# Allow jupyterlab for ipyvtk
-ENV DISPLAY=:99.0
-ENV JUPYTER_ENABLE_LAB=yes
-ENV PYVISTA_USE_IPYVTK=true
-
+# Add headless display
 COPY expath/docker/nbstart /srv/bin/nbstart
 RUN  chmod +x /srv/bin/nbstart
 
-ENTRYPOINT ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root","/srv/bin/nbstart"]
+EXPOSE 8888/tcp
+ENV SHELL /bin/bash
+
+ENTRYPOINT ["/srv/bin/nbstart", "jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root"]
