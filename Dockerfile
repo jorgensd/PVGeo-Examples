@@ -1,11 +1,10 @@
 FROM dolfinx/dolfinx
-#buildpack-deps:bionic
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3-pip libgl1-mesa-dev xvfb && \
 	apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache --upgrade pip && \
-    pip3 install --no-cache notebook pyvista notebook
+    pip3 install --no-cache notebook pyvista
 
 # create user with a home directory
 ARG NB_USER=fenics
@@ -18,14 +17,13 @@ RUN adduser --disabled-password \
     --uid ${NB_UID} \
     ${NB_USER}
 
-ENV DISPLAY=:99.0
-ENV VISTA_OFF_SCREEN=True
-ENV VISTA_PLOT_THEME=document
-RUN which Xvfb
-RUN Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-RUN sleep 3
-RUN exec "$@"
 
 WORKDIR ${HOME}
 COPY . ${HOME}
+RUN chown -R ${NB_UID} ${HOME}
+COPY start /srv/bin/start
+RUN  chmod +x /srv/bin/start
+
 USER ${USER}
+ENTRYPOINT ["/srv/bin/start"]
+CMD ["python3 test.py"]
