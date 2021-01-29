@@ -1,4 +1,5 @@
-FROM buildpack-deps:bionic
+FROM dolfinx/dolfinx
+#buildpack-deps:bionic
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3-pip libgl1-mesa-dev xvfb && \
