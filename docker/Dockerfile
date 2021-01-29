@@ -13,4 +13,7 @@ ENV DISPLAY=:99.0
 ENV JUPYTER_ENABLE_LAB=yes
 ENV PYVISTA_USE_IPYVTK=true
 
-ENTRYPOINT [ "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &", "jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root",]
+COPY ./nbstart /srv/bin/start
+RUN  chmod +x /srv/bin/start
+
+ENTRYPOINT ["/srv/bin/start", "jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root",]
