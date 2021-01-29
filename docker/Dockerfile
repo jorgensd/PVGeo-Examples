@@ -13,7 +13,7 @@ ENV DISPLAY=:99.0
 ENV JUPYTER_ENABLE_LAB=yes
 ENV PYVISTA_USE_IPYVTK=true
 
-COPY nbstart /srv/bin/start
+COPY docker/nbstart /srv/bin/start
 RUN  chmod +x /srv/bin/nbstart
 
 ENTRYPOINT ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root", "/srv/bin/nbstart"]
