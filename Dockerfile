@@ -1,7 +1,7 @@
 FROM buildpack-deps:bionic
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends libgl1-mesa-dev xvfb && \
+	apt-get install -y --no-install-recommends python3-pip libgl1-mesa-dev xvfb && \
 	apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache --upgrade pip && \
     pip3 install --no-cache notebook pyvista
